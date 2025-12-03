@@ -34,21 +34,39 @@ cd billeteras
 npm install
 ```
 
-### 3. Configurar API Key de OpenAI
+### 3. Configurar API Key de OpenAI (producción y local)
 
-1. Copia el archivo `.env.example` a `.env.local`:
+Para mantener tu clave segura en producción usamos un endpoint serverless en Vercel. No expongas la clave en el cliente.
+
+1. Producción / Preview en Vercel
+
+   - En el panel de tu proyecto en Vercel → **Settings → Environment Variables** añade la variable:
+
+     Key: `OPENAI_API_KEY`  
+     Value: `sk-...` (tu API key)
+
+   - Alternativamente desde la CLI:
+
 ```bash
-copy .env.example .env.local
+vercel env add OPENAI_API_KEY production
+vercel env add OPENAI_API_KEY preview
 ```
 
-2. Obtén tu API key desde https://platform.openai.com/api-keys
+2. Desarrollo local seguro
 
-3. Edita `.env.local` y reemplaza `tu-api-key-aqui` con tu API key real:
+   - Para desarrollo local evita exponer la clave en el repositorio. Crea un `.env.local` (no se compromete) y añade:
+
 ```env
-VITE_OPENAI_API_KEY=sk-proj-...
+OPENAI_API_KEY=REPLACE_WITH_YOUR_OPENAI_KEY
 ```
 
-⚠️ **IMPORTANTE**: Nunca compartas tu API key ni la subas a Git. El archivo `.env.local` ya está en `.gitignore`
+   - Usa `vercel dev` para arrancar tu app y las funciones serverless localmente (carga variables del entorno):
+
+```bash
+npm i -g vercel
+vercel login
+vercel dev
+```
 
 ### 4. Ejecutar el proyecto
 
@@ -122,9 +140,10 @@ npm run lint         # Ejecuta el linter
 
 ## ⚠️ Notas importantes
 
-- **Seguridad**: La API key se usa en el cliente (navegador). Para producción, considera crear un backend que haga las llamadas a OpenAI
+- **Seguridad**: La aplicación ahora realiza llamadas a OpenAI desde una función serverless (`/api/generate-chart`) — la API key debe almacenarse como `OPENAI_API_KEY` en Vercel y **no** en el código cliente.
 - **Costos**: Cada consulta consume tokens de tu cuenta de OpenAI. Usa el modelo `gpt-4o-mini` para reducir costos
 - **Datos**: La IA puede generar datos aproximados si no encuentra información exacta. Siempre verifica la precisión de los datos importantes
+ - **Reemplazo de clave comprometida**: Si ya subiste una clave al repo (o la has expuesto), revócala y genera una nueva en https://platform.openai.com/account/api-keys. Luego actualiza la variable `OPENAI_API_KEY` en Vercel.
 
 ## 📄 Licencia
 
