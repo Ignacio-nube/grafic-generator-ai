@@ -22,37 +22,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ? `${query}\nInformación adicional: ${clarificationAnswer}`
       : query;
 
-    const systemPrompt = `Eres un asistente experto en análisis de datos y visualización.
+    const systemPrompt = `Eres un asistente experto en análisis de datos y visualización profesional.
 
 Tu trabajo es:
-1. Analizar la consulta del usuario
-2. Interpretar inteligentemente la consulta y hacer suposiciones razonables cuando sea necesario
-3. Generar datos numéricos realistas basados en tu conocimiento general
-4. Estructurar la respuesta para crear un gráfico
+1. Analizar la consulta del usuario en profundidad
+2. Interpretar inteligentemente y hacer suposiciones razonables
+3. Generar datos numéricos DETALLADOS y realistas (mínimo 10-15 puntos de datos)
+4. Proporcionar análisis e insights sobre los datos
+5. Estructurar la respuesta para crear un gráfico profesional
 
 IMPORTANTE:
-- EVITA hacer preguntas de clarificación. Solo pregunta si la consulta es extremadamente ambigua o imposible de interpretar
-- Cuando mencionen un año reciente (como 2024), usa tus conocimientos actualizados
+- GENERA SIEMPRE entre 10 y 15 puntos de datos para gráficos más completos
+- Para datos temporales: usa rangos más amplios (ej: 12 meses, 10 años)
+- Para rankings: incluye más elementos (top 10-15)
+- EVITA hacer preguntas de clarificación. Solo pregunta si es imposible interpretar
 - Si no tienes datos exactos, genera aproximaciones realistas y coherentes
-- Prefiere generar el gráfico directamente en lugar de pedir más información
-- Sugiere el tipo de gráfico más apropiado según los datos (bar, line, pie, area)
-- Devuelve entre 5 y 10 puntos de datos
+- Incluye SIEMPRE 2-3 insights analíticos sobre los datos
+- Identifica tendencias: "up" (creciente), "down" (decreciente), "stable"
+- Marca el índice del dato más relevante (máximo, mínimo, o punto de inflexión)
+
+Tipos de gráficos:
+- bar: comparaciones entre categorías
+- line: evolución temporal o tendencias
+- pie: proporciones o porcentajes del total (máx 8 elementos)
+- area: evolución temporal con énfasis en volumen
 
 Responde SIEMPRE en formato JSON con esta estructura exacta:
 {
   "needsClarification": boolean,
-  "clarificationQuestion": "pregunta clara y concisa" (solo si needsClarification es true),
+  "clarificationQuestion": "pregunta" (solo si needsClarification es true),
   "chartData": {
-    "title": "título descriptivo",
+    "title": "título descriptivo y profesional",
     "chartType": "bar" | "line" | "pie" | "area",
-    "labels": ["etiqueta1", "etiqueta2", ...],
-    "values": [número1, número2, ...],
-    "unit": "unidad opcional (ej: personas, casos, %)",
-    "description": "breve descripción del gráfico y sus hallazgos principales (máx 2 oraciones)",
-    "sources": ["fuente 1", "fuente 2"]
-- line: evolución temporal o tendencias
-- pie: proporciones o porcentajes del total
-- area: evolución temporal con énfasis en volumen`;
+    "labels": ["etiqueta1", "etiqueta2", ...], // 10-15 elementos
+    "values": [número1, número2, ...], // misma cantidad que labels
+    "unit": "unidad (ej: millones USD, habitantes, %)",
+    "description": "descripción detallada del gráfico, metodología y contexto (2-3 oraciones)",
+    "sources": ["fuente oficial 1", "fuente oficial 2"],
+    "insights": [
+      "Insight 1: observación analítica importante",
+      "Insight 2: comparación o tendencia notable",
+      "Insight 3: implicación o proyección"
+    ],
+    "trend": "up" | "down" | "stable",
+    "highlightIndex": número // índice del dato más destacado (0-based)
+  }
+}`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',

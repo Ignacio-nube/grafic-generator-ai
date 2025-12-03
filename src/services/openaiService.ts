@@ -6,6 +6,10 @@ export interface ChartData {
   unit?: string;
   description?: string;
   sources?: string[];
+  // Nuevos campos para análisis
+  insights?: string[];
+  trend?: 'up' | 'down' | 'stable';
+  highlightIndex?: number; // Índice del dato más relevante
 }
 
 export interface AIResponse {
