@@ -8,7 +8,7 @@ Graficos AI es una aplicación web gratuita que permite crear gráficos profesio
 
 ## URL
 
-https://grafic-generator-ai.vercel.app/
+https://graficos.ignacio.cloud/
 
 ## Funcionalidades principales
 
