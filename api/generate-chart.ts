@@ -1,20 +1,17 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
-
-export const config = {
-  runtime: 'edge',
-};
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function handler(req: Request) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { query, clarificationAnswer } = await req.json();
+    const { query, clarificationAnswer } = req.body;
 
     const fullQuery = clarificationAnswer
       ? `${query}\nInformación adicional: ${clarificationAnswer}`
@@ -67,15 +64,10 @@ Responde SIEMPRE en formato JSON con esta estructura exacta:
       throw new Error('No se recibió respuesta de OpenAI');
     }
 
-    return new Response(responseText, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return res.status(200).json(JSON.parse(responseText));
 
   } catch (error) {
     console.error('Error en API:', error);
-    return new Response(JSON.stringify({ error: 'Error processing request' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return res.status(500).json({ error: 'Error processing request' });
   }
 }
