@@ -6,6 +6,11 @@ const openai = new OpenAI({
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Verificar API key
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(500).json({ error: 'OPENAI_API_KEY not configured' });
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -66,8 +71,14 @@ Responde SIEMPRE en formato JSON con esta estructura exacta:
 
     return res.status(200).json(JSON.parse(responseText));
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error en API:', error);
-    return res.status(500).json({ error: 'Error processing request' });
+    const errorMessage = error?.message || 'Unknown error';
+    const errorCode = error?.code || error?.status || 500;
+    return res.status(500).json({ 
+      error: 'Error processing request',
+      details: errorMessage,
+      code: errorCode
+    });
   }
 }
