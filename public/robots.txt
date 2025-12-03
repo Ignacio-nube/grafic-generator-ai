@@ -1,0 +1,11 @@
+# Robots.txt para Graficos AI
+# https://grafic-generator-ai.vercel.app
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://grafic-generator-ai.vercel.app/sitemap.xml
+
+# Crawl-delay (opcional, para ser amigable con los bots)
+Crawl-delay: 1
