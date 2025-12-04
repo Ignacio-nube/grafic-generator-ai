@@ -18,7 +18,11 @@ import { FaUser, FaRobot } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ColorModeButton, useColorModeValue } from '@/components/ui/color-mode';
 import { processQueryWithAI, type ChartData } from '../services/openaiService';
+import { saveChart, canCreateChart } from '../services/chartService';
+import type { SavedChart } from '../services/chartService';
+import { useAuth } from '../contexts/AuthContext';
 import ChartRenderer from './ChartRenderer';
+import LoginModal from '../components/auth/LoginModal';
 
 // Motion components
 const MotionBox = motion.create(Box);
@@ -33,14 +37,55 @@ interface Message {
 	timestamp: Date;
 }
 
-export default function ChartCreator() {
+interface ChartCreatorProps {
+	initialChart?: SavedChart | null;
+	onChartSaved?: () => void;
+}
+
+export default function ChartCreator({ initialChart, onChartSaved }: ChartCreatorProps) {
+	const { user, anonymousId } = useAuth();
 	const [query, setQuery] = useState('');
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 	const [waitingForClarification, setWaitingForClarification] = useState(false);
 	const [originalQuery, setOriginalQuery] = useState('');
+	const [showLoginModal, setShowLoginModal] = useState(false);
+	const [loginReason, setLoginReason] = useState<'save' | 'download' | 'share' | 'limit'>('save');
 	const messagesEndRef = useRef<HTMLDivElement>(null);
+	
+	// Estado para rastrear el gráfico guardado actual
+	const [currentSavedChartId, setCurrentSavedChartId] = useState<string | undefined>();
+	const [currentShareId, setCurrentShareId] = useState<string | undefined>();
+
+	// Cargar gráfico seleccionado del sidebar
+	useEffect(() => {
+		if (initialChart) {
+			setCurrentSavedChartId(initialChart.id);
+			setCurrentShareId(initialChart.shareId);
+			setMessages([{
+				id: initialChart.id,
+				type: 'assistant',
+				content: initialChart.title,
+				chartData: {
+					labels: initialChart.labels,
+					values: initialChart.values,
+					title: initialChart.title,
+					chartType: initialChart.chartType,
+					unit: initialChart.unit,
+					description: initialChart.description,
+					sources: initialChart.sources,
+					insights: initialChart.insights,
+					trend: initialChart.trend
+				},
+				timestamp: new Date(initialChart.createdAt)
+			}]);
+		} else {
+			// Resetear cuando no hay gráfico inicial
+			setCurrentSavedChartId(undefined);
+			setCurrentShareId(undefined);
+		}
+	}, [initialChart]);
 
 	const quickPrompts = [
 		'Top 10 países más poblados',
@@ -79,10 +124,58 @@ export default function ChartCreator() {
 			timestamp: new Date()
 		};
 		setMessages(prev => [...prev, newMessage]);
+		return newMessage;
+	};
+
+	// Guardar gráfico automáticamente al crearlo
+	const autoSaveChart = async (chartData: ChartData) => {
+		// Verificar límites
+		const { allowed } = await canCreateChart(user?.id, anonymousId);
+		
+		if (!allowed) {
+			// Mostrar modal de login si no tiene cuenta
+			if (!user) {
+				setLoginReason('limit');
+				setShowLoginModal(true);
+			}
+			return;
+		}
+
+		// Guardar gráfico
+		const result = await saveChart(chartData, user?.id, anonymousId);
+		if (result.success && result.chart) {
+			setCurrentSavedChartId(result.chart.id);
+			setCurrentShareId(result.chart.shareId);
+			onChartSaved?.();
+		}
+	};
+
+	// Handler cuando el gráfico se guarda desde ChartRenderer (al compartir)
+	const handleChartSavedFromShare = (chartId: string, shareId: string) => {
+		setCurrentSavedChartId(chartId);
+		setCurrentShareId(shareId);
+		onChartSaved?.();
 	};
 
 	const handleSubmit = async () => {
 		if (!query.trim()) return;
+
+		// Verificar límites antes de crear
+		const { allowed, limit } = await canCreateChart(user?.id, anonymousId);
+		if (!allowed) {
+			if (!user) {
+				setLoginReason('limit');
+				setShowLoginModal(true);
+				setError(`Has alcanzado el límite de ${limit} gráficos gratis. Inicia sesión para guardar más.`);
+			} else {
+				setError(`Has alcanzado el límite de ${limit} gráficos. Actualiza a Pro para gráficos ilimitados.`);
+			}
+			return;
+		}
+
+		// Resetear IDs del gráfico anterior (es un nuevo gráfico)
+		setCurrentSavedChartId(undefined);
+		setCurrentShareId(undefined);
 
 		const userQuery = query;
 		setQuery('');
@@ -99,6 +192,8 @@ export default function ChartCreator() {
 				setOriginalQuery(userQuery);
 			} else if (response.chartData) {
 				addMessage('assistant', response.chartData.title, response.chartData);
+				// Guardar automáticamente
+				await autoSaveChart(response.chartData);
 			} else {
 				setError('No se pudo procesar la respuesta de la IA');
 			}
@@ -129,6 +224,8 @@ export default function ChartCreator() {
 
 			if (response.chartData) {
 				addMessage('assistant', response.chartData.title, response.chartData);
+				// Guardar automáticamente
+				await autoSaveChart(response.chartData);
 			} else {
 				setError('No se pudieron obtener datos');
 			}
@@ -142,6 +239,12 @@ export default function ChartCreator() {
 		} finally {
 			setLoading(false);
 		}
+	};
+
+	// Handler para requerir login (pasado a ChartRenderer)
+	const handleRequireLogin = (reason: 'save' | 'download' | 'share' | 'limit') => {
+		setLoginReason(reason);
+		setShowLoginModal(true);
 	};
 
 	const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -463,7 +566,13 @@ export default function ChartCreator() {
 															transition={{ duration: 0.4, ease: "easeOut" }}
 														>
 															{message.chartData && (
-																<ChartRenderer chartData={message.chartData} />
+																<ChartRenderer 
+																	chartData={message.chartData} 
+																	onRequireLogin={handleRequireLogin}
+																	savedChartId={currentSavedChartId}
+																	savedShareId={currentShareId}
+																	onChartSaved={handleChartSavedFromShare}
+																/>
 															)}
 														</MotionBox>
 													</HStack>
@@ -601,6 +710,13 @@ export default function ChartCreator() {
 					</MotionBox>
 				)}
 			</AnimatePresence>
+
+			{/* Login Modal */}
+			<LoginModal 
+				isOpen={showLoginModal} 
+				onClose={() => setShowLoginModal(false)}
+				reason={loginReason}
+			/>
 		</Box>
 	);
 }

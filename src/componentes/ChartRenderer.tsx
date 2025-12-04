@@ -33,10 +33,14 @@ import {
   FaChartLine,
   FaChartPie,
   FaChartArea,
-  FaImage
+  FaShare,
+
+  FaCheck
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useColorModeValue } from '@/components/ui/color-mode';
+import { useAuth } from '../contexts/AuthContext';
+import { saveChart, toggleChartPublic } from '../services/chartService';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import type { ChartData } from '../services/openaiService';
@@ -45,6 +49,12 @@ const MotionBox = motion.create(Box);
 
 interface ChartRendererProps {
   chartData: ChartData;
+  onRequireLogin?: (reason: 'save' | 'download' | 'share' | 'limit') => void;
+  // Para saber si el gráfico ya está guardado
+  savedChartId?: string;
+  savedShareId?: string;
+  // Callback cuando se guarda para compartir
+  onChartSaved?: (chartId: string, shareId: string) => void;
 }
 
 // Conversión compacta para que los ticks ocupen máx. 4 caracteres
@@ -90,12 +100,21 @@ const COLORS = [
   '#38ef7d', '#11998e', '#fc4a1a', '#f7b733', '#00b4db'
 ];
 
-export default function ChartRenderer({ chartData }: ChartRendererProps) {
+export default function ChartRenderer({ 
+  chartData, 
+  onRequireLogin,
+  savedChartId,
+  savedShareId,
+  onChartSaved
+}: ChartRendererProps) {
   const { labels, values, title, chartType, unit } = chartData;
+  const { user, anonymousId } = useAuth();
   const chartRef = useRef<HTMLDivElement>(null);
   const [activeChartType, setActiveChartType] = useState(chartType);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  const [copied, setCopied] = useState(false);
   
   // Detectar cambios de tamaño de pantalla
   useEffect(() => {
@@ -223,45 +242,14 @@ export default function ChartRenderer({ chartData }: ChartRendererProps) {
     };
   }, []);
 
-  // Función de descarga PNG
-  const handleDownloadPNG = useCallback(async () => {
-    if (!chartRef.current) return;
-    
-    try {
-      const element = chartRef.current;
-      const restoreStyles = prepareElementForCapture(element);
-      
-      const canvas = await html2canvas(element, {
-        scale: 3,
-        backgroundColor: '#ffffff',
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        removeContainer: true,
-        imageTimeout: 0,
-        onclone: (clonedDoc) => {
-          // Asegurar fondo blanco en el clon
-          const clonedElement = clonedDoc.body.querySelector('[data-chart-container]');
-          if (clonedElement) {
-            (clonedElement as HTMLElement).style.backgroundColor = '#ffffff';
-          }
-        }
-      });
-      
-      restoreStyles();
-      
-      const link = document.createElement('a');
-      link.download = `${title || 'grafico'}.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
-    } catch (error) {
-      console.error('Error generando PNG:', error);
-      alert(`Error al descargar PNG: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  }, [title, prepareElementForCapture]);
-
-  // Función de descarga PDF profesional
+  // Función de descarga PDF profesional (requiere login)
   const handleDownload = useCallback(async () => {
+    // Verificar si el usuario está logueado
+    if (!user) {
+      onRequireLogin?.('download');
+      return;
+    }
+
     if (!chartRef.current || isDownloading) return;
     
     setIsDownloading(true);
@@ -441,7 +429,58 @@ export default function ChartRenderer({ chartData }: ChartRendererProps) {
     } finally {
       setIsDownloading(false);
     }
-  }, [title, isDownloading, prepareElementForCapture, stats, data, values.length, unit]);
+  }, [user, onRequireLogin, title, isDownloading, prepareElementForCapture, stats, data, values.length, unit]);
+
+  // Función para compartir (requiere cuenta, guarda si no está guardado)
+  const handleShare = useCallback(async () => {
+    // 1. Verificar si el usuario está logueado
+    if (!user) {
+      onRequireLogin?.('share');
+      return;
+    }
+
+    setIsSharing(true);
+
+    try {
+      let shareId = savedShareId;
+
+      // 2. Si no está guardado, guardar primero
+      if (!savedChartId) {
+        const result = await saveChart(chartData, user.id, anonymousId);
+        
+        if (!result.success || !result.chart) {
+          alert(result.error || 'Error al guardar el gráfico');
+          setIsSharing(false);
+          return;
+        }
+
+        shareId = result.chart.shareId;
+        
+        // Hacer el gráfico público
+        await toggleChartPublic(result.chart.id, true);
+        
+        // Notificar que se guardó
+        onChartSaved?.(result.chart.id, result.chart.shareId);
+      } else {
+        // Ya está guardado, solo hacerlo público si no lo es
+        await toggleChartPublic(savedChartId, true);
+      }
+
+      // 3. Generar y copiar el link
+      const baseUrl = window.location.origin;
+      const shareUrl = `${baseUrl}/chart/${shareId}`;
+      
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+
+    } catch (error) {
+      console.error('Error al compartir:', error);
+      alert('Error al compartir el gráfico');
+    } finally {
+      setIsSharing(false);
+    }
+  }, [user, onRequireLogin, savedChartId, savedShareId, chartData, anonymousId, onChartSaved]);
 
   const getChartIcon = (type: string) => {
     switch(type) {
@@ -678,7 +717,7 @@ export default function ChartRenderer({ chartData }: ChartRendererProps) {
             ))}
           </HStack>
 
-          {/* Botones de descarga */}
+          {/* Botones de acción */}
           <HStack gap={1}>
             <Button
               size={{ base: 'xs', md: 'sm' }}
@@ -687,6 +726,7 @@ export default function ChartRenderer({ chartData }: ChartRendererProps) {
               onClick={handleDownload}
               loading={isDownloading}
               loadingText="..."
+              title={user ? 'Descargar PDF' : 'Inicia sesión para descargar PDF'}
             >
               <Icon as={FaDownload} boxSize={{ base: 3, md: 4 }} />
               <Text ml={1} display={{ base: 'none', sm: 'inline' }}>PDF</Text>
@@ -694,11 +734,19 @@ export default function ChartRenderer({ chartData }: ChartRendererProps) {
             <Button
               size={{ base: 'xs', md: 'sm' }}
               variant="outline"
-              colorPalette="gray"
-              onClick={handleDownloadPNG}
+              colorPalette={copied ? 'green' : 'gray'}
+              onClick={handleShare}
+              loading={isSharing}
+              loadingText="..."
+              title={user 
+                ? (savedChartId ? 'Compartir gráfico' : 'Guardar y compartir') 
+                : 'Inicia sesión para compartir'
+              }
             >
-              <Icon as={FaImage} boxSize={{ base: 3, md: 4 }} />
-              <Text ml={1} display={{ base: 'none', sm: 'inline' }}>PNG</Text>
+              <Icon as={copied ? FaCheck : FaShare} boxSize={{ base: 3, md: 4 }} />
+              <Text ml={1} display={{ base: 'none', sm: 'inline' }}>
+                {copied ? '¡Link copiado!' : (savedChartId ? 'Compartir' : 'Guardar y compartir')}
+              </Text>
             </Button>
           </HStack>
         </HStack>
