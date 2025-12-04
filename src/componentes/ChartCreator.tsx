@@ -81,9 +81,14 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 				timestamp: new Date(initialChart.createdAt)
 			}]);
 		} else {
-			// Resetear cuando no hay gráfico inicial
+			// Resetear todo cuando no hay gráfico inicial (nuevo gráfico)
 			setCurrentSavedChartId(undefined);
 			setCurrentShareId(undefined);
+			setMessages([]);
+			setQuery('');
+			setError('');
+			setWaitingForClarification(false);
+			setOriginalQuery('');
 		}
 	}, [initialChart]);
 

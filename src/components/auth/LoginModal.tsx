@@ -11,6 +11,7 @@ import {
   CloseButton,
   Box,
 } from '@chakra-ui/react';
+import { useColorModeValue } from '../ui/color-mode';
 import { FaGoogle, FaCheckCircle, FaChartPie } from 'react-icons/fa';
 
 interface LoginModalProps {
@@ -21,6 +22,17 @@ interface LoginModalProps {
 
 export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginModalProps) {
   const { signInWithGoogle, loading } = useAuth();
+  
+  // Colores para modo claro/oscuro
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const titleColor = useColorModeValue('gray.800', 'white');
+  const descColor = useColorModeValue('gray.600', 'gray.300');
+  const textColor = useColorModeValue('gray.700', 'gray.200');
+  const mutedColor = useColorModeValue('gray.500', 'gray.400');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  const footerBg = useColorModeValue('gray.50', 'gray.900');
+  const buttonBorderColor = useColorModeValue('gray.300', 'gray.600');
+  const buttonHoverBg = useColorModeValue('gray.100', 'gray.700');
 
   const handleGoogleLogin = async () => {
     const { error } = await signInWithGoogle();
@@ -49,6 +61,9 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
     'Acceso desde cualquier lugar'
   ];
 
+  // No renderizar nada si no está abierto
+  if (!isOpen) return null;
+
   return (
     <Dialog.Root
       open={isOpen}
@@ -56,18 +71,12 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
       placement="center"
       motionPreset="slide-in-bottom"
       size={{ base: 'full', md: 'sm' }}
-      lazyMount
-      unmountOnExit
     >
       <Portal>
-        <Dialog.Backdrop 
-          bg="blackAlpha.700" 
-          _open={{ opacity: 1 }}
-          _closed={{ opacity: 0 }}
-        />
+        <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content
-            bg={{ base: 'white', _dark: 'gray.800' }}
+            bg={bgColor}
             borderRadius={{ base: '0', md: 'xl' }}
             mx={{ base: 0, md: 4 }}
           >
@@ -77,8 +86,7 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                 position="absolute" 
                 top="3" 
                 right="3"
-                color={{ base: 'gray.500', _dark: 'gray.400' }}
-                _hover={{ color: { base: 'gray.700', _dark: 'white' } }}
+                color={mutedColor}
               />
             </Dialog.CloseTrigger>
 
@@ -88,7 +96,7 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                 <Box
                   p={3}
                   borderRadius="xl"
-                  bg={{ base: '#b9030f', _dark: '#e63946' }}
+                  bg="#b9030f"
                   color="white"
                 >
                   <Icon as={FaChartPie} boxSize={6} />
@@ -99,13 +107,13 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                   <Dialog.Title 
                     fontWeight="bold" 
                     fontSize="xl"
-                    color={{ base: 'gray.800', _dark: 'white' }}
+                    color={titleColor}
                   >
                     Gráficos AI
                   </Dialog.Title>
                   <Dialog.Description 
-                    color={{ base: 'gray.600', _dark: 'gray.300' }} 
                     fontSize="sm"
+                    color={descColor}
                   >
                     {getMessage()}
                   </Dialog.Description>
@@ -116,10 +124,7 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                   {benefits.map((benefit, i) => (
                     <HStack key={i} gap={2}>
                       <Icon as={FaCheckCircle} color="#b9030f" boxSize={4} />
-                      <Text 
-                        fontSize="sm"
-                        color={{ base: 'gray.700', _dark: 'gray.200' }}
-                      >
+                      <Text fontSize="sm" color={textColor}>
                         {benefit}
                       </Text>
                     </HStack>
@@ -130,14 +135,10 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                 <Button
                   w="full"
                   size="lg"
-                  bg={{ base: 'white', _dark: '#b9030f' }}
-                  color={{ base: 'gray.700', _dark: 'white' }}
-                  border="1px solid"
-                  borderColor={{ base: 'gray.300', _dark: 'transparent' }}
-                  _hover={{ 
-                    bg: { base: 'gray.100', _dark: '#9e0004' },
-                    borderColor: { base: 'gray.400', _dark: 'transparent' }
-                  }}
+                  variant="outline"
+                  borderColor={buttonBorderColor}
+                  color={textColor}
+                  _hover={{ bg: buttonHoverBg }}
                   onClick={handleGoogleLogin}
                   disabled={loading}
                   fontWeight="600"
@@ -146,7 +147,7 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                     <Spinner size="sm" />
                   ) : (
                     <HStack gap={2}>
-                      <Icon as={FaGoogle} color={{ base: '#DB4437', _dark: 'white' }} />
+                      <Icon as={FaGoogle} color="#DB4437" />
                       <Text>Continuar con Google</Text>
                     </HStack>
                   )}
@@ -156,9 +157,9 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                 <Dialog.ActionTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    size="sm" 
-                    color={{ base: 'gray.500', _dark: 'gray.400' }}
-                    _hover={{ color: { base: 'gray.700', _dark: 'gray.200' } }}
+                    size="sm"
+                    color={mutedColor}
+                    _hover={{ color: textColor }}
                   >
                     Ahora no
                   </Button>
@@ -167,14 +168,14 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
             </Dialog.Body>
 
             <Dialog.Footer
-              bg={{ base: 'gray.50', _dark: 'gray.900' }}
+              bg={footerBg}
               py={3}
               borderTop="1px solid"
-              borderColor={{ base: 'gray.200', _dark: 'gray.700' }}
+              borderColor={borderColor}
             >
               <Text 
                 fontSize="xs" 
-                color={{ base: 'gray.500', _dark: 'gray.500' }} 
+                color={mutedColor}
                 textAlign="center" 
                 w="full"
               >
