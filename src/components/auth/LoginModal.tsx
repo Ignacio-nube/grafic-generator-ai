@@ -60,7 +60,11 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
       unmountOnExit
     >
       <Portal>
-        <Dialog.Backdrop bg="blackAlpha.700" />
+        <Dialog.Backdrop 
+          bg="blackAlpha.700" 
+          _open={{ opacity: 1 }}
+          _closed={{ opacity: 0 }}
+        />
         <Dialog.Positioner>
           <Dialog.Content
             bg={{ base: 'white', _dark: 'gray.800' }}
