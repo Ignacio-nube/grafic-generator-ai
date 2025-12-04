@@ -100,7 +100,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 	const mutedColor = useColorModeValue('gray.500', 'gray.400');
 	const borderColor = useColorModeValue('gray.200', 'gray.800');
 	const inputBg = useColorModeValue('white', 'gray.800');
-	const userMsgBg = useColorModeValue('blue.500', 'blue.600');
+	const userMsgBg = useColorModeValue('brand.500', 'brand.600');
 	const assistantMsgBg = useColorModeValue('white', 'gray.800');
 	const headerBg = useColorModeValue('white', 'gray.900');
 
@@ -284,7 +284,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 								<HStack gap={3}>
 									<MotionBox 
 										p={2} 
-										bg="blue.500" 
+										bg="brand.500" 
 										rounded="xl"
 										color="white"
 										whileHover={{ scale: 1.05 }}
@@ -335,21 +335,21 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 							>
 								{/* Logo and Title */}
 								<VStack gap={4}>
-									<MotionBox 
-										p={4} 
-										bg="blue.500" 
-										rounded="2xl"
-										color="white"
-										initial={{ scale: 0 }}
-										animate={{ scale: 1 }}
-										transition={{ 
-											type: "spring", 
-											stiffness: 260, 
-											damping: 20,
-											delay: 0.2 
-										}}
-										whileHover={{ scale: 1.1, rotate: 5 }}
-									>
+										<MotionBox 
+											p={4} 
+											bg="brand.500" 
+											rounded="2xl"
+											color="white"
+											initial={{ scale: 0 }}
+											animate={{ scale: 1 }}
+											transition={{ 
+												type: "spring", 
+												stiffness: 260, 
+												damping: 20,
+												delay: 0.2 
+											}}
+											whileHover={{ scale: 1.1, rotate: 5 }}
+										>
 										<IoSparkles size={40} />
 									</MotionBox>
 									<MotionBox
@@ -396,9 +396,9 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 												rounded="xl"
 												fontSize="md"
 												_focus={{ 
-													borderColor: 'blue.400', 
+													borderColor: 'brand.400', 
 													outline: 'none',
-													shadow: '0 0 0 3px rgba(66, 153, 225, 0.15)'
+													shadow: '0 0 0 3px rgba(185, 3, 15, 0.2)'
 												}}
 												_placeholder={{ color: mutedColor }}
 												disabled={loading}
@@ -413,7 +413,9 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 												h="40px"
 												w="40px"
 												rounded="lg"
-												colorPalette="blue"
+												bg="brand.500"
+												color="white"
+												_hover={{ bg: 'brand.600' }}
 												disabled={loading || !query.trim()}
 											>
 												<IoSend size={18} />
@@ -446,11 +448,11 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 													color={mutedColor}
 													fontWeight="normal"
 													rounded="full"
-													_hover={{ 
-														borderColor: 'blue.400', 
-														color: 'blue.500',
-														bg: 'transparent'
-													}}
+														_hover={{ 
+															borderColor: 'brand.500', 
+															color: 'brand.500',
+															bg: 'brand.50'
+														}}
 												>
 													{prompt}
 												</Button>
@@ -510,7 +512,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 														>
 															<Text>{message.content}</Text>
 														</MotionBox>
-														<Avatar.Root size="sm" colorPalette="blue">
+															<Avatar.Root size="sm" colorPalette="red">
 															<Avatar.Fallback>
 																<FaUser size={12} />
 															</Avatar.Fallback>
@@ -607,7 +609,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 														py={4}
 													>
 														<HStack gap={3}>
-															<Spinner size="sm" color="blue.500" />
+																<Spinner size="sm" color="brand.500" />
 															<Text color={mutedColor}>Generando gráfico...</Text>
 														</HStack>
 													</Box>
@@ -679,9 +681,9 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 										rounded="xl"
 										fontSize="md"
 										_focus={{ 
-											borderColor: 'blue.400', 
+											borderColor: 'brand.400', 
 											outline: 'none',
-											shadow: '0 0 0 3px rgba(66, 153, 225, 0.15)'
+											shadow: '0 0 0 3px rgba(185, 3, 15, 0.2)'
 										}}
 										_placeholder={{ color: mutedColor }}
 										disabled={loading}
@@ -696,7 +698,9 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 										h="40px"
 										w="40px"
 										rounded="lg"
-										colorPalette="blue"
+										bg="brand.500"
+										color="white"
+										_hover={{ bg: 'brand.600' }}
 										disabled={loading || !query.trim()}
 									>
 										<IoSend size={18} />

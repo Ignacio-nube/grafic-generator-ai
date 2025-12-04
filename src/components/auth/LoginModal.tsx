@@ -1,17 +1,17 @@
 import { useAuth } from '../../contexts/AuthContext';
 import {
-  Box,
   Button,
   VStack,
   HStack,
   Text,
   Icon,
   Spinner,
+  Dialog,
+  Portal,
+  CloseButton,
+  Box,
 } from '@chakra-ui/react';
-import { FaGoogle } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const MotionBox = motion.create(Box);
+import { FaGoogle, FaCheckCircle, FaChartPie } from 'react-icons/fa';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -27,150 +27,159 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
     if (error) {
       console.error('Login error:', error);
     }
-    // El redirect ocurrirá automáticamente
   };
 
   const getMessage = () => {
     switch (reason) {
       case 'download':
-        return 'Inicia sesión para descargar el PDF de tu gráfico';
+        return 'Inicia sesión para descargar tu gráfico';
       case 'share':
-        return 'Inicia sesión para compartir tu gráfico con un link interactivo';
+        return 'Inicia sesión para compartir tu gráfico';
       case 'limit':
-        return 'Has alcanzado el límite de gráficos gratis. Inicia sesión para guardar más';
+        return 'Inicia sesión para continuar creando';
       default:
-        return 'Inicia sesión para guardar tus gráficos y acceder desde cualquier dispositivo';
+        return 'Guarda y accede a tus gráficos';
     }
   };
 
+  const benefits = [
+    'Guarda en la nube',
+    'Exporta en HD',
+    'Comparte con un link',
+    'Acceso desde cualquier lugar'
+  ];
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <MotionBox
-            position="fixed"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            bg="blackAlpha.600"
-            zIndex={1000}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
-          
-          {/* Modal */}
-          <MotionBox
-            position="fixed"
-            top="50%"
-            left="50%"
-            transform="translate(-50%, -50%)"
-            bg="white"
-            _dark={{ bg: 'gray.800' }}
-            rounded="2xl"
-            shadow="2xl"
-            p={8}
-            zIndex={1001}
-            maxW="400px"
-            w="90%"
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+    <Dialog.Root
+      open={isOpen}
+      onOpenChange={(e) => !e.open && onClose()}
+      placement="center"
+      motionPreset="slide-in-bottom"
+      size={{ base: 'full', md: 'sm' }}
+      lazyMount
+      unmountOnExit
+    >
+      <Portal>
+        <Dialog.Backdrop bg="blackAlpha.700" />
+        <Dialog.Positioner>
+          <Dialog.Content
+            bg={{ base: 'white', _dark: 'gray.800' }}
+            borderRadius={{ base: '0', md: 'xl' }}
+            mx={{ base: 0, md: 4 }}
           >
-            <VStack gap={6}>
-              {/* Logo/Icon */}
-              <Box
-                w={16}
-                h={16}
-                rounded="full"
-                bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <Text fontSize="2xl">📊</Text>
-              </Box>
-              
-              {/* Title */}
-              <VStack gap={2}>
-                <Text fontSize="xl" fontWeight="bold" textAlign="center">
-                  Bienvenido a Gráficos AI
-                </Text>
-                <Text fontSize="sm" color="gray.500" textAlign="center">
-                  {getMessage()}
-                </Text>
+            <Dialog.CloseTrigger asChild>
+              <CloseButton 
+                size="sm" 
+                position="absolute" 
+                top="3" 
+                right="3"
+                color={{ base: 'gray.500', _dark: 'gray.400' }}
+                _hover={{ color: { base: 'gray.700', _dark: 'white' } }}
+              />
+            </Dialog.CloseTrigger>
+
+            <Dialog.Body py={8} px={6}>
+              <VStack gap={6}>
+                {/* Icon */}
+                <Box
+                  p={3}
+                  borderRadius="xl"
+                  bg={{ base: '#b9030f', _dark: '#e63946' }}
+                  color="white"
+                >
+                  <Icon as={FaChartPie} boxSize={6} />
+                </Box>
+
+                {/* Title */}
+                <VStack gap={1} textAlign="center">
+                  <Dialog.Title 
+                    fontWeight="bold" 
+                    fontSize="xl"
+                    color={{ base: 'gray.800', _dark: 'white' }}
+                  >
+                    Gráficos AI
+                  </Dialog.Title>
+                  <Dialog.Description 
+                    color={{ base: 'gray.600', _dark: 'gray.300' }} 
+                    fontSize="sm"
+                  >
+                    {getMessage()}
+                  </Dialog.Description>
+                </VStack>
+
+                {/* Benefits */}
+                <VStack align="start" gap={2} w="full">
+                  {benefits.map((benefit, i) => (
+                    <HStack key={i} gap={2}>
+                      <Icon as={FaCheckCircle} color="#b9030f" boxSize={4} />
+                      <Text 
+                        fontSize="sm"
+                        color={{ base: 'gray.700', _dark: 'gray.200' }}
+                      >
+                        {benefit}
+                      </Text>
+                    </HStack>
+                  ))}
+                </VStack>
+
+                {/* Google Button */}
+                <Button
+                  w="full"
+                  size="lg"
+                  bg={{ base: 'white', _dark: '#b9030f' }}
+                  color={{ base: 'gray.700', _dark: 'white' }}
+                  border="1px solid"
+                  borderColor={{ base: 'gray.300', _dark: 'transparent' }}
+                  _hover={{ 
+                    bg: { base: 'gray.100', _dark: '#9e0004' },
+                    borderColor: { base: 'gray.400', _dark: 'transparent' }
+                  }}
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  fontWeight="600"
+                >
+                  {loading ? (
+                    <Spinner size="sm" />
+                  ) : (
+                    <HStack gap={2}>
+                      <Icon as={FaGoogle} color={{ base: '#DB4437', _dark: 'white' }} />
+                      <Text>Continuar con Google</Text>
+                    </HStack>
+                  )}
+                </Button>
+
+                {/* Skip */}
+                <Dialog.ActionTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    color={{ base: 'gray.500', _dark: 'gray.400' }}
+                    _hover={{ color: { base: 'gray.700', _dark: 'gray.200' } }}
+                  >
+                    Ahora no
+                  </Button>
+                </Dialog.ActionTrigger>
               </VStack>
-              
-              {/* Benefits */}
-              <VStack align="start" gap={2} w="full" px={4}>
-                <HStack gap={2}>
-                  <Text>✓</Text>
-                  <Text fontSize="sm">Guarda hasta 8 gráficos gratis</Text>
-                </HStack>
-                <HStack gap={2}>
-                  <Text>✓</Text>
-                  <Text fontSize="sm">Descarga en PDF profesional</Text>
-                </HStack>
-                <HStack gap={2}>
-                  <Text>✓</Text>
-                  <Text fontSize="sm">Comparte con un enlace</Text>
-                </HStack>
-                <HStack gap={2}>
-                  <Text>✓</Text>
-                  <Text fontSize="sm">Accede desde cualquier dispositivo</Text>
-                </HStack>
-              </VStack>
-              
-              {/* Google Login Button */}
-              <Button
+            </Dialog.Body>
+
+            <Dialog.Footer
+              bg={{ base: 'gray.50', _dark: 'gray.900' }}
+              py={3}
+              borderTop="1px solid"
+              borderColor={{ base: 'gray.200', _dark: 'gray.700' }}
+            >
+              <Text 
+                fontSize="xs" 
+                color={{ base: 'gray.500', _dark: 'gray.500' }} 
+                textAlign="center" 
                 w="full"
-                size="lg"
-                bg="white"
-                color="gray.700"
-                border="1px solid"
-                borderColor="gray.300"
-                _hover={{ bg: 'gray.50', borderColor: 'gray.400' }}
-                _dark={{ 
-                  bg: 'gray.700', 
-                  color: 'white',
-                  borderColor: 'gray.600',
-                  _hover: { bg: 'gray.600' }
-                }}
-                onClick={handleGoogleLogin}
-                disabled={loading}
               >
-                {loading ? (
-                  <Spinner size="sm" />
-                ) : (
-                  <HStack gap={3}>
-                    <Icon as={FaGoogle} color="red.500" />
-                    <Text>Continuar con Google</Text>
-                  </HStack>
-                )}
-              </Button>
-              
-              {/* Skip/Close */}
-              <Button
-                variant="ghost"
-                size="sm"
-                color="gray.500"
-                onClick={onClose}
-              >
-                Ahora no
-              </Button>
-              
-              {/* Terms */}
-              <Text fontSize="xs" color="gray.400" textAlign="center">
-                Al continuar, aceptas nuestros términos de servicio y política de privacidad
+                Al continuar, aceptas nuestros Términos de Servicio
               </Text>
-            </VStack>
-          </MotionBox>
-        </>
-      )}
-    </AnimatePresence>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog.Root>
   );
 }

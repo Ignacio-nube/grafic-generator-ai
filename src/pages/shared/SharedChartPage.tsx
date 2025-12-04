@@ -50,7 +50,7 @@ export default function SharedChartPage() {
     return (
       <Box bg={bg} minH="100vh" display="flex" alignItems="center" justifyContent="center">
         <VStack gap={4}>
-          <Spinner size="xl" color="blue.500" />
+          <Spinner size="xl" color="brand.500" />
           <Text color={mutedColor}>Cargando gráfico...</Text>
         </VStack>
       </Box>
@@ -70,7 +70,7 @@ export default function SharedChartPage() {
               Este gráfico puede haber sido eliminado o no es público.
             </Text>
           </VStack>
-          <Button asChild colorPalette="blue" size="lg">
+          <Button asChild colorPalette="red" size="lg">
             <Link to="/">
               <Icon as={FaArrowLeft} mr={2} />
               Crear mi propio gráfico
@@ -95,7 +95,7 @@ export default function SharedChartPage() {
         <Container maxW="4xl" py={3}>
           <HStack justify="space-between" align="center">
             <HStack gap={3}>
-              <Box p={2} bg="blue.500" rounded="xl" color="white">
+              <Box p={2} bg="brand.500" rounded="xl" color="white">
                 <IoSparkles size={20} />
               </Box>
               <VStack align="start" gap={0}>
@@ -133,7 +133,7 @@ export default function SharedChartPage() {
                 w={10} 
                 h={10} 
                 rounded="full" 
-                bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                bg="linear-gradient(135deg, #b9030f 0%, #e63946 100%)"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
@@ -174,7 +174,7 @@ export default function SharedChartPage() {
 
           {/* Call to action */}
           <Box 
-            bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            bg="linear-gradient(135deg, #b9030f 0%, #e63946 100%)"
             p={6}
             rounded="xl"
             textAlign="center"

@@ -5,6 +5,15 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* Nueva paleta de colores - Roja */
+  --color-primary: #b9030f;
+  --color-primary-light: #e63946;
+  --color-primary-dark: #70160e;
+  --color-accent: #b9030f;
+  --color-accent-dark: #9e0004;
+  --color-bg: #e1e3db;
+  --color-dark: #161917;
 }
 
 *, *::before, *::after {
@@ -14,13 +23,13 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f7f9fc;
-  color: #0f172a;
+  background-color: #e1e3db;
+  color: #161917;
 }
 
 a {
   color: inherit;
 }
 button, input, optgroup, select, textarea {
-    color: var(--chakra-colors-gray-400);
+    color: #5c5e56;
 }

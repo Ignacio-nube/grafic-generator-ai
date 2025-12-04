@@ -93,11 +93,11 @@ const formatFullNumber = (value: number) => {
   }).format(value);
 };
 
-// Colores modernos para los gráficos
+// Colores modernos para los gráficos basados en la nueva paleta roja
 const COLORS = [
-  '#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b',
-  '#fa709a', '#fee140', '#30cfd0', '#a8edea', '#ff6e7f',
-  '#38ef7d', '#11998e', '#fc4a1a', '#f7b733', '#00b4db'
+  '#b9030f', '#9e0004', '#70160e', '#e63946', '#c1121f',
+  '#d90429', '#a4161a', '#800f19', '#ff4d5a', '#ff6b6b',
+  '#ef233c', '#660f15', '#ff8589', '#4a0d0f', '#f07178'
 ];
 
 export default function ChartRenderer({ 
@@ -137,8 +137,8 @@ export default function ChartRenderer({
   const greenText = useColorModeValue('green.800', 'green.100');
   const redBg = useColorModeValue('red.100', 'red.900');
   const redText = useColorModeValue('red.800', 'red.100');
-  const blueBg = useColorModeValue('blue.100', 'blue.900');
-  const blueText = useColorModeValue('blue.800', 'blue.100');
+  const blueBg = useColorModeValue('brand.100', 'brand.900');
+  const blueText = useColorModeValue('brand.800', 'brand.100');
 
   // Calcular estadísticas
   const stats = useMemo(() => {
@@ -509,7 +509,7 @@ export default function ChartRenderer({
           <Text fontWeight="bold" color={textColor} fontSize="sm" mb={1}>
             {label}
           </Text>
-          <Text fontWeight="bold" color="blue.500" fontSize="lg">
+          <Text fontWeight="bold" color="brand.500" fontSize="lg">
             {formatFullNumber(dataPoint.value)} {unit || ''}
           </Text>
           {dataPoint.isMax && (
@@ -688,7 +688,7 @@ export default function ChartRenderer({
       <VStack align="stretch" gap={3}>
         <HStack justify="space-between" align="center" wrap="wrap" gap={2}>
           <HStack gap={2} minW={0} flex={1}>
-            <Icon as={getChartIcon(activeChartType)} color="blue.solid" boxSize={{ base: 4, md: 5 }} flexShrink={0} />
+            <Icon as={getChartIcon(activeChartType)} color="brand.solid" boxSize={{ base: 4, md: 5 }} flexShrink={0} />
             <Text 
               fontSize={{ base: 'md', md: 'xl' }} 
               fontWeight="bold" 
@@ -709,7 +709,9 @@ export default function ChartRenderer({
                 aria-label={type}
                 size={{ base: 'xs', md: 'sm' }}
                 variant={activeChartType === type ? 'solid' : 'ghost'}
-                colorPalette={activeChartType === type ? 'blue' : 'gray'}
+                bg={activeChartType === type ? 'accent.500' : undefined}
+                color={activeChartType === type ? 'white' : undefined}
+                _hover={{ bg: activeChartType === type ? 'accent.600' : 'gray.200', _dark: { bg: activeChartType === type ? 'accent.600' : 'gray.700' } }}
                 onClick={() => setActiveChartType(type)}
               >
                 <Icon as={getChartIcon(type)} boxSize={{ base: 3, md: 4 }} />
@@ -722,7 +724,9 @@ export default function ChartRenderer({
             <Button
               size={{ base: 'xs', md: 'sm' }}
               variant="solid"
-              colorPalette="blue"
+              bg="accent.500"
+              color="white"
+              _hover={{ bg: 'accent.600' }}
               onClick={handleDownload}
               loading={isDownloading}
               loadingText="..."

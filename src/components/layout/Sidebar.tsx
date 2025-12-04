@@ -47,10 +47,10 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
   
   const sidebarBg = useColorModeValue('gray.50', 'gray.900');
   const hoverBg = useColorModeValue('gray.100', 'gray.800');
-  const activeBg = useColorModeValue('blue.50', 'blue.900');
+  const activeBg = useColorModeValue('brand.100', 'brand.900');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
-  const textColor = useColorModeValue('gray.700', 'gray.200');
-  const mutedColor = useColorModeValue('gray.500', 'gray.400');
+  const textColor = useColorModeValue('dark.800', 'dark.50');
+  const mutedColor = useColorModeValue('dark.400', 'dark.300');
 
   const loadCharts = useCallback(async () => {
     setLoading(true);
@@ -153,7 +153,8 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
             <Button 
               size="xs" 
               variant="ghost" 
-              colorPalette="blue"
+              color="accent.500"
+              _hover={{ bg: 'accent.50', _dark: { bg: 'accent.900' } }}
               onClick={() => setShowLoginModal(true)}
             >
               <Icon as={FaCrown} mr={1} />
@@ -172,7 +173,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
         >
           <Box 
             h="full" 
-            bg={chartLimit.current >= chartLimit.limit ? 'red.500' : 'blue.500'}
+            bg={chartLimit.current >= chartLimit.limit ? 'red.500' : 'brand.500'}
             w={`${Math.min((chartLimit.current / chartLimit.limit) * 100, 100)}%`}
             transition="width 0.3s"
           />
@@ -215,7 +216,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
                 <HStack gap={3} flex={1} minW={0}>
                   <Icon 
                     as={getChartIcon(chart.chartType)} 
-                    color={currentChartId === chart.id ? 'blue.500' : mutedColor}
+                    color={currentChartId === chart.id ? 'brand.500' : mutedColor}
                     flexShrink={0}
                   />
                   <VStack align="start" gap={0} flex={1} minW={0}>
@@ -259,7 +260,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
                 w={8}
                 h={8}
                 rounded="full"
-                bg="blue.500"
+                bg="brand.500"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
@@ -299,7 +300,9 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
           <Button
             w="full"
             size="sm"
-            colorPalette="blue"
+            bg="accent.500"
+            color="white"
+            _hover={{ bg: 'accent.600' }}
             onClick={() => setShowLoginModal(true)}
           >
             Iniciar sesión
