@@ -141,6 +141,9 @@ export default function ChartRenderer({
   const redText = useColorModeValue('red.800', 'red.100');
   const blueBg = useColorModeValue('brand.100', 'brand.900');
   const blueText = useColorModeValue('brand.800', 'brand.100');
+  
+  // Color para el Brush (barra de control de items)
+  const brushFill = useColorModeValue('#ffffff', '#1a1a1a');
 
   // Calcular estadísticas
   const stats = useMemo(() => {
@@ -556,13 +559,13 @@ export default function ChartRenderer({
           width={isMobile ? 40 : 60}
         />
         <Tooltip content={<CustomTooltip />} />
-        {!isMobile && <Legend wrapperStyle={{ paddingTop: '20px' }} />}
+        {!isMobile && <Legend wrapperStyle={{ paddingTop: '20px', color: chartTextColor }} />}
         <Bar dataKey="value" name={unit || t('chart.value')} radius={[4, 4, 0, 0]} animationDuration={800}>
           {data.map((_, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Bar>
-        {values.length > 10 && !isMobile && <Brush dataKey="name" height={25} stroke="#667eea" />}
+        {values.length > 10 && !isMobile && <Brush dataKey="name" height={25} stroke="#b9030f" fill={brushFill} />}
       </BarChart>
     </ResponsiveContainer>
   );
@@ -586,18 +589,18 @@ export default function ChartRenderer({
           width={isMobile ? 40 : 60}
         />
         <Tooltip content={<CustomTooltip />} />
-        {!isMobile && <Legend wrapperStyle={{ paddingTop: '20px' }} />}
+        {!isMobile && <Legend wrapperStyle={{ paddingTop: '20px', color: chartTextColor }} />}
         <Line 
           type="monotone" 
           dataKey="value" 
           name={unit || t('chart.value')}
-          stroke="#667eea" 
+          stroke="#b9030f" 
           strokeWidth={isMobile ? 2 : 3}
-          dot={isMobile ? false : { fill: '#667eea', strokeWidth: 2, r: 4 }}
+          dot={isMobile ? false : { fill: '#b9030f', strokeWidth: 2, r: 4 }}
           activeDot={{ r: isMobile ? 4 : 6, stroke: '#fff', strokeWidth: 2 }}
           animationDuration={800}
         />
-        {values.length > 10 && !isMobile && <Brush dataKey="name" height={25} stroke="#667eea" />}
+        {values.length > 10 && !isMobile && <Brush dataKey="name" height={25} stroke="#b9030f" fill={brushFill} />}
       </LineChart>
     </ResponsiveContainer>
   );
@@ -629,7 +632,7 @@ export default function ChartRenderer({
           layout={isMobile ? "horizontal" : "vertical"} 
           align={isMobile ? "center" : "right"} 
           verticalAlign={isMobile ? "bottom" : "middle"}
-          wrapperStyle={isMobile ? { fontSize: '10px', paddingTop: '10px' } : {}}
+          wrapperStyle={isMobile ? { fontSize: '10px', paddingTop: '10px', color: chartTextColor } : { color: chartTextColor }}
         />
       </PieChart>
     </ResponsiveContainer>
@@ -640,8 +643,8 @@ export default function ChartRenderer({
       <AreaChart data={data} margin={chartMargin}>
         <defs>
           <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#667eea" stopOpacity={0.8}/>
-            <stop offset="95%" stopColor="#667eea" stopOpacity={0.1}/>
+            <stop offset="5%" stopColor="#b9030f" stopOpacity={0.8}/>
+            <stop offset="95%" stopColor="#b9030f" stopOpacity={0.1}/>
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke={gridColor} opacity={0.3} />
@@ -660,17 +663,17 @@ export default function ChartRenderer({
           width={isMobile ? 40 : 60}
         />
         <Tooltip content={<CustomTooltip />} />
-        {!isMobile && <Legend wrapperStyle={{ paddingTop: '20px' }} />}
+        {!isMobile && <Legend wrapperStyle={{ paddingTop: '20px', color: chartTextColor }} />}
         <Area 
           type="monotone" 
           dataKey="value" 
-          stroke="#667eea" 
+          stroke="#b9030f" 
           fill="url(#colorValue)"
           strokeWidth={isMobile ? 2 : 3}
           name={unit || t('chart.value')}
           animationDuration={800}
         />
-        {values.length > 10 && !isMobile && <Brush dataKey="name" height={25} stroke="#667eea" />}
+        {values.length > 10 && !isMobile && <Brush dataKey="name" height={25} stroke="#b9030f" fill={brushFill} />}
       </AreaChart>
     </ResponsiveContainer>
   );
