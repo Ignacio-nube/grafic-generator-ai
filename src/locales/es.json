@@ -1,0 +1,119 @@
+{
+  "app": {
+    "title": "Gráficos AI",
+    "subtitle": "Generador de gráficos con IA"
+  },
+  "sidebar": {
+    "newChart": "Nuevo gráfico",
+    "chartCount": "Gráficos: {{current}}/{{limit}}",
+    "more": "Más",
+    "loading": "Cargando...",
+    "noCharts": "No tienes gráficos guardados",
+    "createPrompt": "Crea uno y aparecerá aquí",
+    "freePlan": "Plan Gratis",
+    "signOut": "Cerrar sesión",
+    "signIn": "Iniciar sesión",
+    "toggleAriaLabel": "Alternar barra lateral",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar este gráfico?"
+  },
+  "time": {
+    "now": "Ahora",
+    "minutesAgo": "Hace {{count}}m",
+    "hoursAgo": "Hace {{count}}h",
+    "daysAgo": "Hace {{count}}d"
+  },
+  "creator": {
+    "welcomeTitle": "¿Qué gráfico quieres crear?",
+    "welcomeDescription": "Describe tus datos en lenguaje natural y la IA generará el gráfico perfecto.",
+    "inputPlaceholder": "Describe el gráfico que necesitas...",
+    "clarificationPlaceholder": "Escribe tu respuesta...",
+    "send": "Enviar",
+    "needMoreDetails": "Necesito más detalles",
+    "generating": "Generando gráfico...",
+    "disclaimer": "Los datos generados son aproximaciones. Verifica con fuentes oficiales."
+  },
+  "quickPrompts": {
+    "topCountries": "Top 10 países más poblados",
+    "bitcoin": "Evolución del Bitcoin 2020-2024",
+    "programming": "Distribución de lenguajes de programación",
+    "sales": "Ventas trimestrales 2024"
+  },
+  "limits": {
+    "reachedAnon": "Has alcanzado el límite de {{limit}} gráficos gratis. Inicia sesión para guardar más.",
+    "reachedUser": "Has alcanzado el límite de {{limit}} gráficos. Actualiza a Pro para gráficos ilimitados."
+  },
+  "stats": {
+    "maximum": "Máximo",
+    "minimum": "Mínimo",
+    "total": "Total",
+    "average": "Promedio",
+    "maxShort": "Máx:",
+    "minShort": "Mín:"
+  },
+  "chart": {
+    "value": "Valor"
+  },
+  "actions": {
+    "pdf": "PDF",
+    "linkCopied": "¡Link copiado!",
+    "share": "Compartir",
+    "saveAndShare": "Guardar y compartir",
+    "downloadPdf": "Descargar PDF",
+    "signInToDownload": "Inicia sesión para descargar PDF",
+    "shareChart": "Compartir gráfico",
+    "signInToShare": "Inicia sesión para compartir"
+  },
+  "pdf": {
+    "header": "GRAFICOS AI",
+    "chartDefault": "Gráfico",
+    "dataHeader": "DATOS DEL GRÁFICO",
+    "label": "Etiqueta",
+    "value": "Valor",
+    "percentOfTotal": "% del Total",
+    "footer": "Generado con graficos.ignacio.cloud",
+    "pageOf": "Página {{current}} de {{total}}",
+    "disclaimer": "Los datos son aproximaciones. Verificar con fuentes oficiales."
+  },
+  "login": {
+    "reasonDownload": "Inicia sesión para descargar tu gráfico",
+    "reasonShare": "Inicia sesión para compartir tu gráfico",
+    "reasonLimit": "Inicia sesión para continuar creando",
+    "reasonDefault": "Guarda y accede a tus gráficos",
+    "benefit1": "Guarda en la nube",
+    "benefit2": "Exporta en HD",
+    "benefit3": "Comparte con un link",
+    "benefit4": "Acceso desde cualquier lugar",
+    "continueWithGoogle": "Continuar con Google",
+    "notNow": "Ahora no",
+    "termsNotice": "Al continuar, aceptas nuestros Términos de Servicio"
+  },
+  "sharedPage": {
+    "invalidId": "ID de gráfico no válido",
+    "notFound": "Gráfico no encontrado o no es público",
+    "loadError": "Error al cargar el gráfico",
+    "loading": "Cargando gráfico...",
+    "subtitle": "Gráfico compartido",
+    "createChart": "Crear gráfico",
+    "chartUnavailable": "Este gráfico puede haber sido eliminado o no es público.",
+    "createOwn": "Crear mi propio gráfico",
+    "createdWithAI": "Gráfico creado con IA",
+    "ctaTitle": "¿Quieres crear tu propio gráfico?",
+    "ctaDescription": "Usa inteligencia artificial para generar gráficos profesionales en segundos.",
+    "ctaButton": "Crear gráfico gratis"
+  },
+  "errors": {
+    "aiProcessingFailed": "No se pudo procesar la respuesta de la IA",
+    "queryError": "Error al procesar la consulta",
+    "noData": "No se pudieron obtener datos",
+    "pdfDownload": "Error al descargar PDF",
+    "saveChart": "Error al guardar el gráfico",
+    "shareChart": "Error al compartir el gráfico"
+  },
+  "colorMode": {
+    "toggle": "Cambiar modo de color"
+  },
+  "language": {
+    "toggle": "Cambiar idioma"
+  }
+}

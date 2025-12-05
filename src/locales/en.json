@@ -1,0 +1,119 @@
+{
+  "app": {
+    "title": "Charts AI",
+    "subtitle": "AI Chart Generator"
+  },
+  "sidebar": {
+    "newChart": "New chart",
+    "chartCount": "Charts: {{current}}/{{limit}}",
+    "more": "More",
+    "loading": "Loading...",
+    "noCharts": "You have no saved charts",
+    "createPrompt": "Create one and it will appear here",
+    "freePlan": "Free Plan",
+    "signOut": "Sign out",
+    "signIn": "Sign in",
+    "toggleAriaLabel": "Toggle sidebar",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this chart?"
+  },
+  "time": {
+    "now": "Now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
+  },
+  "creator": {
+    "welcomeTitle": "What chart do you want to create?",
+    "welcomeDescription": "Describe your data in natural language and the AI will generate the perfect chart.",
+    "inputPlaceholder": "Describe the chart you need...",
+    "clarificationPlaceholder": "Write your answer...",
+    "send": "Send",
+    "needMoreDetails": "I need more details",
+    "generating": "Generating chart...",
+    "disclaimer": "Generated data are approximations. Verify with official sources."
+  },
+  "quickPrompts": {
+    "topCountries": "Top 10 most populated countries",
+    "bitcoin": "Bitcoin evolution 2020-2024",
+    "programming": "Programming languages distribution",
+    "sales": "Quarterly sales 2024"
+  },
+  "limits": {
+    "reachedAnon": "You have reached the limit of {{limit}} free charts. Sign in to save more.",
+    "reachedUser": "You have reached the limit of {{limit}} charts. Upgrade to Pro for unlimited charts."
+  },
+  "stats": {
+    "maximum": "Maximum",
+    "minimum": "Minimum",
+    "total": "Total",
+    "average": "Average",
+    "maxShort": "Max:",
+    "minShort": "Min:"
+  },
+  "chart": {
+    "value": "Value"
+  },
+  "actions": {
+    "pdf": "PDF",
+    "linkCopied": "Link copied!",
+    "share": "Share",
+    "saveAndShare": "Save and share",
+    "downloadPdf": "Download PDF",
+    "signInToDownload": "Sign in to download PDF",
+    "shareChart": "Share chart",
+    "signInToShare": "Sign in to share"
+  },
+  "pdf": {
+    "header": "CHARTS AI",
+    "chartDefault": "Chart",
+    "dataHeader": "CHART DATA",
+    "label": "Label",
+    "value": "Value",
+    "percentOfTotal": "% of Total",
+    "footer": "Generated with graficos.ignacio.cloud",
+    "pageOf": "Page {{current}} of {{total}}",
+    "disclaimer": "Data are approximations. Verify with official sources."
+  },
+  "login": {
+    "reasonDownload": "Sign in to download your chart",
+    "reasonShare": "Sign in to share your chart",
+    "reasonLimit": "Sign in to continue creating",
+    "reasonDefault": "Save and access your charts",
+    "benefit1": "Save in the cloud",
+    "benefit2": "Export in HD",
+    "benefit3": "Share with a link",
+    "benefit4": "Access from anywhere",
+    "continueWithGoogle": "Continue with Google",
+    "notNow": "Not now",
+    "termsNotice": "By continuing, you accept our Terms of Service"
+  },
+  "sharedPage": {
+    "invalidId": "Invalid chart ID",
+    "notFound": "Chart not found or is not public",
+    "loadError": "Error loading chart",
+    "loading": "Loading chart...",
+    "subtitle": "Shared chart",
+    "createChart": "Create chart",
+    "chartUnavailable": "This chart may have been deleted or is not public.",
+    "createOwn": "Create my own chart",
+    "createdWithAI": "Chart created with AI",
+    "ctaTitle": "Want to create your own chart?",
+    "ctaDescription": "Use artificial intelligence to generate professional charts in seconds.",
+    "ctaButton": "Create chart for free"
+  },
+  "errors": {
+    "aiProcessingFailed": "Could not process the AI response",
+    "queryError": "Error processing the query",
+    "noData": "Could not get data",
+    "pdfDownload": "Error downloading PDF",
+    "saveChart": "Error saving the chart",
+    "shareChart": "Error sharing the chart"
+  },
+  "colorMode": {
+    "toggle": "Toggle color mode"
+  },
+  "language": {
+    "toggle": "Change language"
+  }
+}

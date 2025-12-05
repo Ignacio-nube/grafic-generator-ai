@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'react-router-dom';
 import { Box, VStack, HStack, Text, Button, Spinner, Container, Icon } from '@chakra-ui/react';
 import { FaArrowLeft, FaChartBar } from 'react-icons/fa';
@@ -9,6 +10,7 @@ import type { SavedChart } from '../../services/chartService';
 import ChartRenderer from '../../componentes/ChartRenderer';
 
 export default function SharedChartPage() {
+  const { t, i18n } = useTranslation();
   const { shareId } = useParams<{ shareId: string }>();
   const [chart, setChart] = useState<SavedChart | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ export default function SharedChartPage() {
   useEffect(() => {
     const loadChart = async () => {
       if (!shareId) {
-        setError('ID de gráfico no válido');
+        setError(t('sharedPage.invalidId'));
         setLoading(false);
         return;
       }
@@ -33,11 +35,11 @@ export default function SharedChartPage() {
         if (chartData) {
           setChart(chartData);
         } else {
-          setError('Gráfico no encontrado o no es público');
+          setError(t('sharedPage.notFound'));
         }
       } catch (err) {
         console.error('Error loading chart:', err);
-        setError('Error al cargar el gráfico');
+        setError(t('sharedPage.loadError'));
       } finally {
         setLoading(false);
       }
@@ -51,7 +53,7 @@ export default function SharedChartPage() {
       <Box bg={bg} minH="100vh" display="flex" alignItems="center" justifyContent="center">
         <VStack gap={4}>
           <Spinner size="xl" color="brand.500" />
-          <Text color={mutedColor}>Cargando gráfico...</Text>
+          <Text color={mutedColor}>{t('sharedPage.loading')}</Text>
         </VStack>
       </Box>
     );
@@ -64,16 +66,16 @@ export default function SharedChartPage() {
           <Icon as={FaChartBar} boxSize={16} color="gray.300" />
           <VStack gap={2}>
             <Text fontSize="2xl" fontWeight="bold" color={textColor}>
-              {error || 'Gráfico no encontrado'}
+              {error || t('sharedPage.notFound')}
             </Text>
             <Text color={mutedColor}>
-              Este gráfico puede haber sido eliminado o no es público.
+              {t('sharedPage.chartUnavailable')}
             </Text>
           </VStack>
           <Button asChild colorPalette="red" size="lg">
             <Link to="/">
               <Icon as={FaArrowLeft} mr={2} />
-              Crear mi propio gráfico
+              {t('sharedPage.createOwn')}
             </Link>
           </Button>
         </VStack>
@@ -100,17 +102,17 @@ export default function SharedChartPage() {
               </Box>
               <VStack align="start" gap={0}>
                 <Text fontWeight="bold" color={textColor} fontSize="lg">
-                  Gráficos AI
+                  {t('app.title')}
                 </Text>
                 <Text fontSize="xs" color={mutedColor}>
-                  Gráfico compartido
+                  {t('sharedPage.subtitle')}
                 </Text>
               </VStack>
             </HStack>
             <Button asChild variant="outline" size="sm">
               <Link to="/">
                 <Icon as={FaArrowLeft} mr={2} />
-                Crear gráfico
+                {t('sharedPage.createChart')}
               </Link>
             </Button>
           </HStack>
@@ -144,10 +146,10 @@ export default function SharedChartPage() {
               </Box>
               <VStack align="start" gap={0}>
                 <Text fontWeight="medium" color={textColor}>
-                  Gráfico creado con IA
+                  {t('sharedPage.createdWithAI')}
                 </Text>
                 <Text fontSize="sm" color={mutedColor}>
-                  {new Date(chart.createdAt).toLocaleDateString('es-ES', {
+                  {new Date(chart.createdAt).toLocaleDateString(i18n.language === 'es' ? 'es-ES' : 'en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
@@ -181,13 +183,13 @@ export default function SharedChartPage() {
           >
             <VStack gap={4}>
               <Text color="white" fontSize="xl" fontWeight="bold">
-                ¿Quieres crear tu propio gráfico?
+                {t('sharedPage.ctaTitle')}
               </Text>
               <Text color="whiteAlpha.800">
-                Usa inteligencia artificial para generar gráficos profesionales en segundos.
+                {t('sharedPage.ctaDescription')}
               </Text>
               <Button asChild colorPalette="whiteAlpha" size="lg">
-                <Link to="/">Crear gráfico gratis</Link>
+                <Link to="/">{t('sharedPage.ctaButton')}</Link>
               </Button>
             </VStack>
           </Box>

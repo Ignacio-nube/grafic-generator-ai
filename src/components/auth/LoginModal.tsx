@@ -1,4 +1,5 @@
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   VStack,
@@ -21,6 +22,7 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginModalProps) {
+  const { t } = useTranslation();
   const { signInWithGoogle, loading } = useAuth();
   
   // Colores para modo claro/oscuro
@@ -44,21 +46,21 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
   const getMessage = () => {
     switch (reason) {
       case 'download':
-        return 'Inicia sesión para descargar tu gráfico';
+        return t('login.reasonDownload');
       case 'share':
-        return 'Inicia sesión para compartir tu gráfico';
+        return t('login.reasonShare');
       case 'limit':
-        return 'Inicia sesión para continuar creando';
+        return t('login.reasonLimit');
       default:
-        return 'Guarda y accede a tus gráficos';
+        return t('login.reasonDefault');
     }
   };
 
   const benefits = [
-    'Guarda en la nube',
-    'Exporta en HD',
-    'Comparte con un link',
-    'Acceso desde cualquier lugar'
+    t('login.benefit1'),
+    t('login.benefit2'),
+    t('login.benefit3'),
+    t('login.benefit4')
   ];
 
   // No renderizar nada si no está abierto
@@ -109,7 +111,7 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                     fontSize="xl"
                     color={titleColor}
                   >
-                    Gráficos AI
+                    {t('app.title')}
                   </Dialog.Title>
                   <Dialog.Description 
                     fontSize="sm"
@@ -148,7 +150,7 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                   ) : (
                     <HStack gap={2}>
                       <Icon as={FaGoogle} color="#DB4437" />
-                      <Text>Continuar con Google</Text>
+                      <Text>{t('login.continueWithGoogle')}</Text>
                     </HStack>
                   )}
                 </Button>
@@ -161,7 +163,7 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                     color={mutedColor}
                     _hover={{ color: textColor }}
                   >
-                    Ahora no
+                    {t('login.notNow')}
                   </Button>
                 </Dialog.ActionTrigger>
               </VStack>
@@ -179,7 +181,7 @@ export default function LoginModal({ isOpen, onClose, reason = 'save' }: LoginMo
                 textAlign="center" 
                 w="full"
               >
-                Al continuar, aceptas nuestros Términos de Servicio
+                {t('login.termsNotice')}
               </Text>
             </Dialog.Footer>
           </Dialog.Content>

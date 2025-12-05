@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
 	Box,
 	Button,
@@ -17,6 +18,7 @@ import { IoSend, IoSparkles } from 'react-icons/io5';
 import { FaUser, FaRobot } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ColorModeButton, useColorModeValue } from '@/components/ui/color-mode';
+import { LanguageToggleButton } from '@/components/ui/language-toggle';
 import { processQueryWithAI, type ChartData } from '../services/openaiService';
 import { saveChart, canCreateChart } from '../services/chartService';
 import type { SavedChart } from '../services/chartService';
@@ -43,6 +45,7 @@ interface ChartCreatorProps {
 }
 
 export default function ChartCreator({ initialChart, onChartSaved }: ChartCreatorProps) {
+	const { t } = useTranslation();
 	const { user, anonymousId } = useAuth();
 	const [query, setQuery] = useState('');
 	const [messages, setMessages] = useState<Message[]>([]);
@@ -93,10 +96,10 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 	}, [initialChart]);
 
 	const quickPrompts = [
-		'Top 10 países más poblados',
-		'Evolución del Bitcoin 2020-2024',
-		'Distribución de lenguajes de programación',
-		'Ventas trimestrales 2024'
+		{ key: 'topCountries', text: t('quickPrompts.topCountries') },
+		{ key: 'bitcoin', text: t('quickPrompts.bitcoin') },
+		{ key: 'programming', text: t('quickPrompts.programming') },
+		{ key: 'sales', text: t('quickPrompts.sales') }
 	];
 
 	// Colores
@@ -171,9 +174,9 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 			if (!user) {
 				setLoginReason('limit');
 				setShowLoginModal(true);
-				setError(`Has alcanzado el límite de ${limit} gráficos gratis. Inicia sesión para guardar más.`);
+				setError(t('limits.reachedAnon', { limit }));
 			} else {
-				setError(`Has alcanzado el límite de ${limit} gráficos. Actualiza a Pro para gráficos ilimitados.`);
+				setError(t('limits.reachedUser', { limit }));
 			}
 			return;
 		}
@@ -200,14 +203,14 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 				// Guardar automáticamente
 				await autoSaveChart(response.chartData);
 			} else {
-				setError('No se pudo procesar la respuesta de la IA');
+				setError(t('errors.aiProcessingFailed'));
 			}
 		} catch (err) {
 			console.error('Error:', err);
 			setError(
 				err instanceof Error
 					? err.message
-					: 'Error al procesar la consulta'
+					: t('errors.queryError')
 			);
 		} finally {
 			setLoading(false);
@@ -232,14 +235,14 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 				// Guardar automáticamente
 				await autoSaveChart(response.chartData);
 			} else {
-				setError('No se pudieron obtener datos');
+				setError(t('errors.noData'));
 			}
 		} catch (err) {
 			console.error('Error:', err);
 			setError(
 				err instanceof Error
 					? err.message
-					: 'Error al procesar la respuesta'
+					: t('errors.queryError')
 			);
 		} finally {
 			setLoading(false);
@@ -299,10 +302,10 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 									</MotionBox>
 									<VStack align="start" gap={0}>
 										<Text fontWeight="semibold" fontSize="lg" color={textColor}>
-											Graficos AI
+											{t('app.title')}
 										</Text>
 										<Text fontSize="xs" color={mutedColor}>
-											Generador de gráficos con IA
+											{t('app.subtitle')}
 										</Text>
 									</VStack>
 								</HStack>
@@ -363,7 +366,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 										transition={{ duration: 0.4, delay: 0.3 }}
 									>
 										<Text fontSize="3xl" fontWeight="light" color={textColor} letterSpacing="-0.02em">
-											¿Qué gráfico quieres crear?
+											{t('creator.welcomeTitle')}
 										</Text>
 									</MotionBox>
 									<MotionBox
@@ -372,7 +375,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 										transition={{ duration: 0.4, delay: 0.4 }}
 									>
 										<Text fontSize="lg" color={mutedColor} maxW="md">
-											Describe tus datos en lenguaje natural y la IA generará el gráfico perfecto.
+											{t('creator.welcomeDescription')}
 										</Text>
 									</MotionBox>
 								</VStack>
@@ -387,7 +390,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 									<HStack gap={3}>
 										<Box position="relative" flex="1">
 											<Input
-												placeholder="Describe el gráfico que necesitas..."
+												placeholder={t('creator.inputPlaceholder')}
 												value={query}
 												onChange={(e) => setQuery(e.target.value)}
 												onKeyPress={handleKeyPress}
@@ -409,7 +412,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 												disabled={loading}
 											/>
 											<IconButton
-												aria-label="Enviar"
+												aria-label={t('creator.send')}
 												onClick={handleSubmit}
 												position="absolute"
 												right={2}
@@ -438,7 +441,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 									<Flex wrap="wrap" gap={2} justify="center" maxW="2xl">
 										{quickPrompts.map((prompt, index) => (
 											<MotionBox
-												key={prompt}
+												key={prompt.key}
 												initial={{ opacity: 0, y: 10 }}
 												animate={{ opacity: 1, y: 0 }}
 												transition={{ duration: 0.3, delay: 0.7 + index * 0.1 }}
@@ -448,7 +451,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 												<Button
 													size="sm"
 													variant="outline"
-													onClick={() => handleQuickPrompt(prompt)}
+													onClick={() => handleQuickPrompt(prompt.text)}
 													borderColor={borderColor}
 													color={mutedColor}
 													fontWeight="normal"
@@ -459,7 +462,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 															bg: 'brand.50'
 														}}
 												>
-													{prompt}
+													{prompt.text}
 												</Button>
 											</MotionBox>
 										))}
@@ -472,7 +475,10 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 									animate={{ opacity: 1 }}
 									transition={{ duration: 0.4, delay: 1 }}
 								>
-									<ColorModeButton size="sm" variant="ghost" />
+									<HStack gap={1}>
+										<ColorModeButton size="sm" variant="ghost" />
+										<LanguageToggleButton size="sm" variant="ghost" />
+									</HStack>
 								</MotionBox>
 							</MotionVStack>
 						</MotionFlex>
@@ -541,7 +547,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 															<Alert.Root status="info" variant="subtle" rounded="2xl" roundedTopLeft="md">
 																<Alert.Indicator />
 																<Box>
-																	<Alert.Title fontWeight="medium">Necesito más detalles</Alert.Title>
+																	<Alert.Title fontWeight="medium">{t('creator.needMoreDetails')}</Alert.Title>
 																	<Alert.Description color={mutedColor}>
 																		{message.content}
 																	</Alert.Description>
@@ -615,7 +621,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 													>
 														<HStack gap={3}>
 																<Spinner size="sm" color="brand.500" />
-															<Text color={mutedColor}>Generando gráfico...</Text>
+															<Text color={mutedColor}>{t('creator.generating')}</Text>
 														</HStack>
 													</Box>
 												</HStack>
@@ -670,8 +676,8 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 									<Input
 										placeholder={
 											waitingForClarification 
-												? "Escribe tu respuesta..." 
-												: "Describe el gráfico que necesitas..."
+												? t('creator.clarificationPlaceholder')
+												: t('creator.inputPlaceholder')
 										}
 										value={query}
 										onChange={(e) => setQuery(e.target.value)}
@@ -694,7 +700,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 										disabled={loading}
 									/>
 									<IconButton
-										aria-label="Enviar"
+										aria-label={t('creator.send')}
 										onClick={waitingForClarification ? handleClarificationSubmit : handleSubmit}
 										position="absolute"
 										right={2}
@@ -713,7 +719,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 								</Box>
 							</HStack>
 							<Text fontSize="xs" color={mutedColor} textAlign="center" mt={2}>
-								Los datos generados son aproximaciones. Verifica con fuentes oficiales.
+								{t('creator.disclaimer')}
 							</Text>
 						</Container>
 					</MotionBox>

@@ -1,4 +1,5 @@
 import { useRef, useState, useMemo, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   BarChart,
   Bar,
@@ -107,6 +108,7 @@ export default function ChartRenderer({
   savedShareId,
   onChartSaved
 }: ChartRendererProps) {
+  const { t, i18n } = useTranslation();
   const { labels, values, title, chartType, unit } = chartData;
   const { user, anonymousId } = useAuth();
   const chartRef = useRef<HTMLDivElement>(null);
@@ -288,11 +290,12 @@ export default function ChartRenderer({
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      pdf.text('GRAFICOS AI', 10, 12);
+      pdf.text(t('pdf.header'), 10, 12);
       
       pdf.setFontSize(9);
       pdf.setFont('helvetica', 'normal');
-      const dateStr = new Date().toLocaleDateString('es-ES', { 
+      const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
+      const dateStr = new Date().toLocaleDateString(locale, { 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
@@ -303,7 +306,7 @@ export default function ChartRenderer({
       pdf.setTextColor(30, 30, 30);
       pdf.setFontSize(18);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(title || 'Gráfico', 10, 30);
+      pdf.text(title || t('pdf.chartDefault'), 10, 30);
       
       // === ESTADÍSTICAS ===
       const statsY = 38;
@@ -314,26 +317,26 @@ export default function ChartRenderer({
       pdf.setFillColor(220, 252, 231);
       pdf.roundedRect(10, statsY, 55, 12, 2, 2, 'F');
       pdf.setTextColor(22, 101, 52);
-      pdf.text(`Máximo: ${formatFullNumber(stats.max)} ${unit || ''}`, 14, statsY + 8);
+      pdf.text(`${t('stats.maximum')}: ${formatFullNumber(stats.max)} ${unit || ''}`, 14, statsY + 8);
       
       // Mínimo
       pdf.setFillColor(254, 226, 226);
       pdf.roundedRect(70, statsY, 55, 12, 2, 2, 'F');
       pdf.setTextColor(153, 27, 27);
-      pdf.text(`Mínimo: ${formatFullNumber(stats.min)} ${unit || ''}`, 74, statsY + 8);
+      pdf.text(`${t('stats.minimum')}: ${formatFullNumber(stats.min)} ${unit || ''}`, 74, statsY + 8);
       
       // Total
       pdf.setFillColor(219, 234, 254);
       pdf.roundedRect(130, statsY, 55, 12, 2, 2, 'F');
       pdf.setTextColor(30, 64, 175);
-      pdf.text(`Total: ${formatFullNumber(stats.sum)} ${unit || ''}`, 134, statsY + 8);
+      pdf.text(`${t('stats.total')}: ${formatFullNumber(stats.sum)} ${unit || ''}`, 134, statsY + 8);
       
       // Promedio
       const avg = stats.sum / values.length;
       pdf.setFillColor(243, 232, 255);
       pdf.roundedRect(190, statsY, 55, 12, 2, 2, 'F');
       pdf.setTextColor(107, 33, 168);
-      pdf.text(`Promedio: ${formatFullNumber(avg)} ${unit || ''}`, 194, statsY + 8);
+      pdf.text(`${t('stats.average')}: ${formatFullNumber(avg)} ${unit || ''}`, 194, statsY + 8);
       
       // === GRÁFICO ===
       const chartY = 55;
@@ -364,7 +367,7 @@ export default function ChartRenderer({
         pdf.setTextColor(255, 255, 255);
         pdf.setFontSize(14);
         pdf.setFont('helvetica', 'bold');
-        pdf.text('DATOS DEL GRÁFICO', 10, 12);
+        pdf.text(t('pdf.dataHeader'), 10, 12);
         
         // Tabla
         const tableStartY = 30;
@@ -378,9 +381,9 @@ export default function ChartRenderer({
         pdf.setFontSize(10);
         pdf.setFont('helvetica', 'bold');
         pdf.text('#', 14, tableStartY + 6);
-        pdf.text('Etiqueta', 30, tableStartY + 6);
-        pdf.text('Valor', 135, tableStartY + 6);
-        pdf.text('% del Total', 185, tableStartY + 6);
+        pdf.text(t('pdf.label'), 30, tableStartY + 6);
+        pdf.text(t('pdf.value'), 135, tableStartY + 6);
+        pdf.text(t('pdf.percentOfTotal'), 185, tableStartY + 6);
         
         // Filas de datos
         pdf.setFont('helvetica', 'normal');
@@ -416,8 +419,8 @@ export default function ChartRenderer({
         pdf.setPage(i);
         pdf.setFontSize(8);
         pdf.setTextColor(150, 150, 150);
-        pdf.text(`Generado con graficos.ignacio.cloud - Página ${i} de ${totalPages}`, 10, pageHeight - 5);
-        pdf.text('Los datos son aproximaciones. Verificar con fuentes oficiales.', pageWidth - 100, pageHeight - 5);
+        pdf.text(`${t('pdf.footer')} - ${t('pdf.pageOf', { current: i, total: totalPages })}`, 10, pageHeight - 5);
+        pdf.text(t('pdf.disclaimer'), pageWidth - 100, pageHeight - 5);
       }
       
       // Guardar PDF
@@ -425,7 +428,7 @@ export default function ChartRenderer({
       
     } catch (error) {
       console.error('Error generando PDF:', error);
-      alert(`Error al descargar PDF: ${error instanceof Error ? error.message : String(error)}`);
+      alert(`${t('errors.pdfDownload')}: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsDownloading(false);
     }
@@ -449,7 +452,7 @@ export default function ChartRenderer({
         const result = await saveChart(chartData, user.id, anonymousId);
         
         if (!result.success || !result.chart) {
-          alert(result.error || 'Error al guardar el gráfico');
+          alert(result.error || t('errors.saveChart'));
           setIsSharing(false);
           return;
         }
@@ -476,7 +479,7 @@ export default function ChartRenderer({
 
     } catch (error) {
       console.error('Error al compartir:', error);
-      alert('Error al compartir el gráfico');
+      alert(t('errors.shareChart'));
     } finally {
       setIsSharing(false);
     }
@@ -513,10 +516,10 @@ export default function ChartRenderer({
             {formatFullNumber(dataPoint.value)} {unit || ''}
           </Text>
           {dataPoint.isMax && (
-            <Badge colorPalette="green" size="sm" mt={1}>Máximo</Badge>
+            <Badge colorPalette="green" size="sm" mt={1}>{t('stats.maximum')}</Badge>
           )}
           {dataPoint.isMin && (
-            <Badge colorPalette="red" size="sm" mt={1}>Mínimo</Badge>
+            <Badge colorPalette="red" size="sm" mt={1}>{t('stats.minimum')}</Badge>
           )}
         </Box>
       );
@@ -554,7 +557,7 @@ export default function ChartRenderer({
         />
         <Tooltip content={<CustomTooltip />} />
         {!isMobile && <Legend wrapperStyle={{ paddingTop: '20px' }} />}
-        <Bar dataKey="value" name={unit || 'Valor'} radius={[4, 4, 0, 0]} animationDuration={800}>
+        <Bar dataKey="value" name={unit || t('chart.value')} radius={[4, 4, 0, 0]} animationDuration={800}>
           {data.map((_, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
@@ -587,7 +590,7 @@ export default function ChartRenderer({
         <Line 
           type="monotone" 
           dataKey="value" 
-          name={unit || 'Valor'}
+          name={unit || t('chart.value')}
           stroke="#667eea" 
           strokeWidth={isMobile ? 2 : 3}
           dot={isMobile ? false : { fill: '#667eea', strokeWidth: 2, r: 4 }}
@@ -664,7 +667,7 @@ export default function ChartRenderer({
           stroke="#667eea" 
           fill="url(#colorValue)"
           strokeWidth={isMobile ? 2 : 3}
-          name={unit || 'Valor'}
+          name={unit || t('chart.value')}
           animationDuration={800}
         />
         {values.length > 10 && !isMobile && <Brush dataKey="name" height={25} stroke="#667eea" />}
@@ -730,10 +733,10 @@ export default function ChartRenderer({
               onClick={handleDownload}
               loading={isDownloading}
               loadingText="..."
-              title={user ? 'Descargar PDF' : 'Inicia sesión para descargar PDF'}
+              title={user ? t('actions.downloadPdf') : t('actions.signInToDownload')}
             >
               <Icon as={FaDownload} boxSize={{ base: 3, md: 4 }} />
-              <Text ml={1} display={{ base: 'none', sm: 'inline' }}>PDF</Text>
+              <Text ml={1} display={{ base: 'none', sm: 'inline' }}>{t('actions.pdf')}</Text>
             </Button>
             <Button
               size={{ base: 'xs', md: 'sm' }}
@@ -743,13 +746,13 @@ export default function ChartRenderer({
               loading={isSharing}
               loadingText="..."
               title={user 
-                ? (savedChartId ? 'Compartir gráfico' : 'Guardar y compartir') 
-                : 'Inicia sesión para compartir'
+                ? (savedChartId ? t('actions.shareChart') : t('actions.saveAndShare')) 
+                : t('actions.signInToShare')
               }
             >
               <Icon as={copied ? FaCheck : FaShare} boxSize={{ base: 3, md: 4 }} />
               <Text ml={1} display={{ base: 'none', sm: 'inline' }}>
-                {copied ? '¡Link copiado!' : (savedChartId ? 'Compartir' : 'Guardar y compartir')}
+                {copied ? t('actions.linkCopied') : (savedChartId ? t('actions.share') : t('actions.saveAndShare'))}
               </Text>
             </Button>
           </HStack>
@@ -759,19 +762,19 @@ export default function ChartRenderer({
       {/* Estadísticas simples con buen contraste */}
       <HStack gap={{ base: 2, md: 4 }} wrap="wrap" justify="center">
         <HStack bg={greenBg} px={{ base: 2, md: 3 }} py={{ base: 1, md: 2 }} rounded="lg" shadow="sm">
-          <Text fontSize={{ base: '2xs', md: 'xs' }} color={greenText} fontWeight="medium">Máx:</Text>
+          <Text fontSize={{ base: '2xs', md: 'xs' }} color={greenText} fontWeight="medium">{t('stats.maxShort')}</Text>
           <Text fontSize={{ base: 'xs', md: 'sm' }} fontWeight="bold" color={greenText}>
             {formatFullNumber(stats.max)} {unit || ''}
           </Text>
         </HStack>
         <HStack bg={redBg} px={{ base: 2, md: 3 }} py={{ base: 1, md: 2 }} rounded="lg" shadow="sm">
-          <Text fontSize={{ base: '2xs', md: 'xs' }} color={redText} fontWeight="medium">Mín:</Text>
+          <Text fontSize={{ base: '2xs', md: 'xs' }} color={redText} fontWeight="medium">{t('stats.minShort')}</Text>
           <Text fontSize={{ base: 'xs', md: 'sm' }} fontWeight="bold" color={redText}>
             {formatFullNumber(stats.min)} {unit || ''}
           </Text>
         </HStack>
         <HStack bg={blueBg} px={{ base: 2, md: 3 }} py={{ base: 1, md: 2 }} rounded="lg" shadow="sm">
-          <Text fontSize={{ base: '2xs', md: 'xs' }} color={blueText} fontWeight="medium">Total:</Text>
+          <Text fontSize={{ base: '2xs', md: 'xs' }} color={blueText} fontWeight="medium">{t('stats.total')}:</Text>
           <Text fontSize={{ base: 'xs', md: 'sm' }} fontWeight="bold" color={blueText}>
             {formatFullNumber(stats.sum)} {unit || ''}
           </Text>

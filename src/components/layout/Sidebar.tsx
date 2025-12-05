@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth, CHART_LIMITS } from '../../contexts/AuthContext';
 import { getUserCharts, deleteChart, canCreateChart } from '../../services/chartService';
 import type { SavedChart } from '../../services/chartService';
@@ -12,7 +13,8 @@ import {
   Button,
   Spinner,
 } from '@chakra-ui/react';
-import { useColorModeValue } from '../ui/color-mode';
+import { useColorModeValue, ColorModeButton } from '../ui/color-mode';
+import { LanguageToggleButton } from '../ui/language-toggle';
 import { 
   FaPlus, 
   FaChartBar, 
@@ -38,6 +40,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ onSelectChart, onNewChart, currentChartId, refreshTrigger }: SidebarProps) {
+  const { t, i18n } = useTranslation();
   const { user, signOut, anonymousId, loading: authLoading } = useAuth();
   const [charts, setCharts] = useState<SavedChart[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,7 +74,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
 
   const handleDeleteChart = async (chartId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('¿Eliminar este gráfico?')) {
+    if (confirm(t('sidebar.deleteConfirm'))) {
       await deleteChart(chartId);
       await loadCharts();
       if (currentChartId === chartId) {
@@ -98,17 +101,18 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Ahora';
-    if (diffMins < 60) return `Hace ${diffMins}m`;
-    if (diffHours < 24) return `Hace ${diffHours}h`;
-    if (diffDays < 7) return `Hace ${diffDays}d`;
-    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    if (diffMins < 1) return t('time.now');
+    if (diffMins < 60) return t('time.minutesAgo', { count: diffMins });
+    if (diffHours < 24) return t('time.hoursAgo', { count: diffHours });
+    if (diffDays < 7) return t('time.daysAgo', { count: diffDays });
+    const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
+    return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
   };
 
   // Mobile toggle button
   const ToggleButton = () => (
     <IconButton
-      aria-label="Toggle sidebar"
+      aria-label={t('sidebar.toggleAriaLabel')}
       position="fixed"
       top={4}
       left={4}
@@ -139,7 +143,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
           borderStyle="dashed"
         >
           <Icon as={FaPlus} mr={2} />
-          Nuevo gráfico
+          {t('sidebar.newChart')}
         </Button>
       </Box>
       
@@ -147,7 +151,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
       <Box px={4} py={2} borderBottom="1px solid" borderColor={borderColor}>
         <HStack justify="space-between">
           <Text fontSize="xs" color={mutedColor}>
-            Gráficos: {chartLimit.current}/{chartLimit.limit === Infinity ? '∞' : chartLimit.limit}
+            {t('sidebar.chartCount', { current: chartLimit.current, limit: chartLimit.limit === Infinity ? '∞' : chartLimit.limit })}
           </Text>
           {!user && (
             <Button 
@@ -158,7 +162,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
               onClick={() => setShowLoginModal(true)}
             >
               <Icon as={FaCrown} mr={1} />
-              Más
+              {t('sidebar.more')}
             </Button>
           )}
         </HStack>
@@ -185,15 +189,15 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
         {loading ? (
           <VStack py={8}>
             <Spinner size="sm" />
-            <Text fontSize="sm" color={mutedColor}>Cargando...</Text>
+            <Text fontSize="sm" color={mutedColor}>{t('sidebar.loading')}</Text>
           </VStack>
         ) : charts.length === 0 ? (
           <VStack py={8} gap={2}>
             <Text fontSize="sm" color={mutedColor} textAlign="center">
-              No tienes gráficos guardados
+              {t('sidebar.noCharts')}
             </Text>
             <Text fontSize="xs" color={mutedColor} textAlign="center">
-              Crea uno y aparecerá aquí
+              {t('sidebar.createPrompt')}
             </Text>
           </VStack>
         ) : (
@@ -235,7 +239,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
                 </HStack>
                 
                 <IconButton
-                  aria-label="Eliminar"
+                  aria-label={t('sidebar.delete')}
                   size="xs"
                   variant="ghost"
                   colorPalette="red"
@@ -249,6 +253,14 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
             ))}
           </VStack>
         )}
+      </Box>
+
+      {/* Settings section */}
+      <Box px={4} py={2} borderTop="1px solid" borderColor={borderColor}>
+        <HStack justify="center" gap={1}>
+          <ColorModeButton />
+          <LanguageToggleButton />
+        </HStack>
       </Box>
 
       {/* User section */}
@@ -283,12 +295,12 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
                   {user.user_metadata?.full_name || user.email?.split('@')[0]}
                 </Text>
                 <Text fontSize="xs" color={mutedColor}>
-                  Plan Gratis
+                  {t('sidebar.freePlan')}
                 </Text>
               </VStack>
             </HStack>
             <IconButton
-              aria-label="Cerrar sesión"
+              aria-label={t('sidebar.signOut')}
               size="sm"
               variant="ghost"
               onClick={signOut}
@@ -305,7 +317,7 @@ export default function Sidebar({ onSelectChart, onNewChart, currentChartId, ref
             _hover={{ bg: 'accent.600' }}
             onClick={() => setShowLoginModal(true)}
           >
-            Iniciar sesión
+            {t('sidebar.signIn')}
           </Button>
         )}
       </Box>
