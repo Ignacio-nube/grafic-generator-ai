@@ -10,6 +10,7 @@ function App() {
   const { user, anonymousId } = useAuth();
   const [selectedChart, setSelectedChart] = useState<SavedChart | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [resetKey, setResetKey] = useState(0);
 
   // Migrar gráficos anónimos cuando el usuario inicie sesión
   useEffect(() => {
@@ -26,6 +27,7 @@ function App() {
 
   const handleNewChart = useCallback(() => {
     setSelectedChart(null);
+    setResetKey(prev => prev + 1); // Forzar reset del ChartCreator
   }, []);
 
   const handleChartSaved = useCallback(() => {
@@ -51,6 +53,7 @@ function App() {
         <ChartCreator 
           initialChart={selectedChart}
           onChartSaved={handleChartSaved}
+          resetKey={resetKey}
         />
       </Box>
     </Box>

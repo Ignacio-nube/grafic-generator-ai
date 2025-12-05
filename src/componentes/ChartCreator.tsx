@@ -42,9 +42,10 @@ interface Message {
 interface ChartCreatorProps {
 	initialChart?: SavedChart | null;
 	onChartSaved?: () => void;
+	resetKey?: number;
 }
 
-export default function ChartCreator({ initialChart, onChartSaved }: ChartCreatorProps) {
+export default function ChartCreator({ initialChart, onChartSaved, resetKey }: ChartCreatorProps) {
 	const { t } = useTranslation();
 	const { user, anonymousId } = useAuth();
 	const [query, setQuery] = useState('');
@@ -61,7 +62,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 	const [currentSavedChartId, setCurrentSavedChartId] = useState<string | undefined>();
 	const [currentShareId, setCurrentShareId] = useState<string | undefined>();
 
-	// Cargar gráfico seleccionado del sidebar
+	// Cargar gráfico seleccionado del sidebar o resetear cuando se pide nuevo gráfico
 	useEffect(() => {
 		if (initialChart) {
 			setCurrentSavedChartId(initialChart.id);
@@ -93,7 +94,7 @@ export default function ChartCreator({ initialChart, onChartSaved }: ChartCreato
 			setWaitingForClarification(false);
 			setOriginalQuery('');
 		}
-	}, [initialChart]);
+	}, [initialChart, resetKey]); // resetKey fuerza el reset incluso si initialChart ya era null
 
 	const quickPrompts = [
 		{ key: 'topCountries', text: t('quickPrompts.topCountries') },
